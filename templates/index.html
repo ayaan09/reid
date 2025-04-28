@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>OD Matrix Generator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      min-height: 100%;
+      background: #101010;
+      color: #fff;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      box-sizing: border-box;
+      scroll-behavior: smooth;
+    }
+    .header1 {
+      width: 100vw;
+      background: #171717;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      box-shadow: 0 2px 8px #2226;
+      z-index: 10;
+      position: sticky;
+      top: 0;
+    }
+    .logos {
+      display: flex;
+      align-items: center;
+      margin-left: 10px;
+    }
+    .logo {
+      height: 38px;
+      margin-top: 6px;
+      margin-right: 10px;
+      padding: 4px;
+      background: #fff;
+      border-radius: 7px;
+      box-shadow: 0 1px 4px #0008;
+    }
+    .header-title {
+      margin-left: 22px;
+      font-size: 1.5rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+      color: #fff;
+      text-shadow: 0 1px 8px #000a;
+    }
+    .main-content {
+      width: 100vw;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-bottom: 30px;
+    }
+    .video-pane-row {
+      width: 98vw;
+      max-width: 1600px;
+      min-width: 260px;
+      min-height: 350px;
+      background: #171717;
+      border-radius: 14px;
+      box-shadow: 0 2px 9px #111c;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      margin: 16px 0 0 0;
+      padding: 0 0 0 0;
+      position: relative;
+    }
+    .video-row-label {
+      position: absolute;
+      left: 14px;
+      top: 10px;
+      font-size: 1rem;
+      font-weight: 600;
+      letter-spacing: .2px;
+      color: #fff;
+      opacity: 0.75;
+      z-index: 1;
+      pointer-events: none;
+    }
+    .video-row-container {
+      flex: 1 1 0;
+      display: flex;
+      align-items: center;
+      overflow-x: auto;
+      overflow-y: hidden;
+      padding: 38px 0 21px 0;
+      margin: 0;
+      scroll-behavior: smooth;
+      /* Hide scrollbar all browsers */
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    .video-row-container::-webkit-scrollbar { display: none; }
+    .video-column {
+      flex: 0 0 320px;
+      width: 320px;
+      margin: 0 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      border-radius: 11px;
+    }
+    .video-label {
+      text-align: center;
+      font-size: 1.07rem;
+      margin-bottom: 7px;
+      color: #fff;
+      font-weight: 500;
+      letter-spacing: .1px;
+      margin-top: 0;
+      opacity: 0.92;
+    }
+    .video-player {
+      width: 270px;
+      height: 310px;
+      background: #111;
+      border-radius: 9px;
+      box-shadow: 0 1px 12px #050505c0;
+      border: 1.5px solid #333;
+      transition: transform 0.25s;
+      outline: none;
+      display: block;
+      margin-bottom: 0;
+    }
+    .video-player.enlarged {
+      transform: scale(1.09);
+      z-index: 3;
+      box-shadow: 0 8px 32px #fff4;
+      border: 2.2px solid #fff;
+    }
+    .add-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 38px;
+      height: 38px;
+      background: #fff;
+      color: #111;
+      border-radius: 50%;
+      font-size: 1.7rem;
+      font-weight: 700;
+      border: none;
+      box-shadow: 0 1px 4px #fff2, 0 0.5px 3px #000c;
+      margin-left: 15px;
+      margin-right: 8px;
+      transition: background 0.13s, color 0.13s;
+      cursor: pointer;
+      outline: none;
+      align-self: center;
+    }
+    .add-btn:hover {
+      background: #111;
+      color: #fff;
+      box-shadow: 0 1px 8px #fff4, 0 1.5px 5px #000c;
+    }
+    .compute-btn {
+      display: block;
+      margin: 28px auto 0 auto;
+      padding: 13px 34px;
+      font-size: 1.13rem;
+      background: #fff;
+      color: #111;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      box-shadow: 0 1.5px 7px #fff2;
+      transition: background 0.16s, color 0.16s;
+      letter-spacing: .3px;
+    }
+    .compute-btn:hover {
+      background: #171717;
+      color: #fff;
+      border: 1.5px solid #fff;
+    }
+    .od-matrix-table {
+      margin: 24px auto 0 auto;
+      border-collapse: collapse;
+      min-width: 380px;
+      background: #171717;
+      border-radius: 10px;
+      box-shadow: 0 1.5px 8px #fff3;
+      overflow: hidden;
+      font-size: 1rem;
+      color: #fff;
+    }
+    .od-matrix-table th, .od-matrix-table td {
+      border: 1px solid #333;
+      padding: 10px 13px;
+      text-align: center;
+    }
+    .od-matrix-table th {
+      background: #222;
+      color: #fff;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+    .od-matrix-table tr:nth-child(even) { background: #101010; }
+    .od-matrix-table tr:nth-child(odd) { background: #171717; }
+    .spinner {
+      margin: 25px auto 0 auto;
+      border: 7px solid #222;
+      border-top: 7px solid #fff;
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      animation: spin 1s linear infinite;
+      box-shadow: 0 1.5px 8px #fff2;
+    }
+    @keyframes spin { 100% { transform: rotate(360deg); } }
+    .matrix-anchor { display: block; height: 1px; }
+    @media (max-width: 900px) {
+      .video-column { width: 120px; }
+      .video-player { width: 80px; height: 100px; }
+      .header-title { font-size: 1.05rem;}
+      .video-pane-row { min-height: 180px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="header1">
+    <div class="logos">
+      <img src="/static/CUHK.png" class="logo"/>
+      <img src="/static/CPII.png" class="logo"/>
+    </div>
+    <span class="header-title">OD Matrix Generator</span>
+  </div>
+  <div class="main-content">
+    <div class="video-pane-row">
+      <span class="video-row-label">Entrance</span>
+      <div class="video-row-container" id="entranceRow"></div>
+      <button class="add-btn" id="addEntranceBtn" title="Add Entrance">+</button>
+      <input type="file" id="entranceFileInput" multiple accept="video/*" style="display:none;">
+    </div>
+    <div class="video-pane-row">
+      <span class="video-row-label">Exit</span>
+      <div class="video-row-container" id="exitRow"></div>
+      <button class="add-btn" id="addExitBtn" title="Add Exit">+</button>
+      <input type="file" id="exitFileInput" multiple accept="video/*" style="display:none;">
+    </div>
+    <button class="compute-btn" id="computeBtn">Compute OD Matrix</button>
+    <span class="matrix-anchor" id="matrix-anchor"></span>
+    <div id="odMatrixContainer"></div>
+  </div>
+  <script>
+    // Initial demo videos
+    let entranceVideos = [
+      {src: "/static/videos/Station1_in.mp4", label: "Entrance 1"},
+      {src: "/static/videos/Station2_in.mp4", label: "Entrance 2"},
+      {src: "/static/videos/station3_in.mp4", label: "Entrance 3"},
+      {src: "/static/videos/station6_in.mp4", label: "Entrance 4"}
+    ];
+    let exitVideos = [
+      {src: "/static/videos/station1_out.mp4", label: "Exit 1"},
+      {src: "/static/videos/Station2_out.mp4", label: "Exit 2"},
+      {src: "/static/videos/station3_out.mp4", label: "Exit 3"},
+      {src: "/static/videos/station4_out.mp4", label: "Exit 4"}
+    ];
+    function renderVideoRow(rowId, videos) {
+      const row = document.getElementById(rowId);
+      row.innerHTML = '';
+      videos.forEach((video, i) => {
+        const col = document.createElement('div');
+        col.className = 'video-column';
+        const label = document.createElement('div');
+        label.className = 'video-label';
+        label.innerText = video.label;
+        const vid = document.createElement('video');
+        vid.className = 'video-player';
+        vid.src = video.src;
+        vid.controls = true;
+        vid.onplay = () => vid.classList.add('enlarged');
+        vid.onpause = vid.onended = () => vid.classList.remove('enlarged');
+        col.appendChild(label);
+        col.appendChild(vid);
+        row.appendChild(col);
+      });
+    }
+    // Initial render
+    renderVideoRow('entranceRow', entranceVideos);
+    renderVideoRow('exitRow', exitVideos);
+
+    document.getElementById('addEntranceBtn').onclick = () =>
+      document.getElementById('entranceFileInput').click();
+    document.getElementById('entranceFileInput').onchange = function(e) {
+      for (const file of e.target.files) {
+        const url = URL.createObjectURL(file);
+        entranceVideos.push({src: url, label: `Entrance ${entranceVideos.length+1}`});
+      }
+      renderVideoRow('entranceRow', entranceVideos);
+    };
+    document.getElementById('addExitBtn').onclick = () =>
+      document.getElementById('exitFileInput').click();
+    document.getElementById('exitFileInput').onchange = function(e) {
+      for (const file of e.target.files) {
+        const url = URL.createObjectURL(file);
+        exitVideos.push({src: url, label: `Exit ${exitVideos.length+1}`});
+      }
+      renderVideoRow('exitRow', exitVideos);
+    };
+
+    // Synchronized horizontal scroll for both panes
+    const entranceRow = document.getElementById('entranceRow');
+    const exitRow = document.getElementById('exitRow');
+    let isSyncing = false;
+    entranceRow.addEventListener('scroll', () => {
+      if (!isSyncing) {
+        isSyncing = true;
+        exitRow.scrollLeft = entranceRow.scrollLeft;
+        setTimeout(()=>{isSyncing=false;},1);
+      }
+    });
+    exitRow.addEventListener('scroll', () => {
+      if (!isSyncing) {
+        isSyncing = true;
+        entranceRow.scrollLeft = exitRow.scrollLeft;
+        setTimeout(()=>{isSyncing=false;},1);
+      }
+    });
+
+    // Compute OD Matrix with loading spinner
+    document.getElementById('computeBtn').onclick = function() {
+      const odMatrixContainer = document.getElementById('odMatrixContainer');
+      odMatrixContainer.innerHTML = `<div class="spinner"></div>`;
+      document.getElementById('matrix-anchor').scrollIntoView({behavior:'smooth', block:'center'});
+      const upPanel = entranceVideos.map((v,i) => i+1);
+      const downPanel = exitVideos.map((v,i) => i+1);
+      const fetchPromise = fetch('/compute_od', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({
+          'entrance_stations': upPanel,
+          'exit_stations': downPanel
+        })
+      }).then(r => r.json());
+      Promise.all([
+        fetchPromise,
+        new Promise(res=>setTimeout(res,5000))
+      ]).then(([data]) => {
+        showODMatrix(data.od_matrix || data, upPanel, downPanel);
+        document.getElementById('matrix-anchor').scrollIntoView({behavior:'smooth', block:'center'});
+      }).catch(() => {
+        odMatrixContainer.innerHTML = '<div style="color:#ff6666;padding:12px;text-align:center;">OD Matrix computation failed.</div>';
+      });
+    };
+    function showODMatrix(matrix, entrance_stations, exit_stations) {
+      const odMatrixContainer = document.getElementById('odMatrixContainer');
+      if (!matrix || !matrix.length) {
+        odMatrixContainer.innerHTML = '<div style="color:#ff6666;padding:12px;text-align:center;">No data.</div>';
+        return;
+      }
+      let html = `<table class="od-matrix-table"><thead><tr><th>Ent/Ex</th>`;
+      for (let en of entrance_stations)
+        html += `<th>En${en}</th>`;
+      html += `</tr></thead><tbody>`;
+      for (let i = 0; i < exit_stations.length; ++i) {
+        html += `<tr><th>Ex${exit_stations[i]}</th>`;
+        for (let j = 0; j < entrance_stations.length; ++j) {
+          html += `<td>${matrix[i][j]}</td>`;
+        }
+        html += `</tr>`;
+      }
+      html += `</tbody></table>`;
+      odMatrixContainer.innerHTML = html;
+    }
+  </script>
+</body>
+</html>

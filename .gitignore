@@ -9,3 +9,4 @@ Part-Aware-Transformer/
 crops/
 embeddings/
 yolo11n.pt
+crop_id_mapping_merged.csv
